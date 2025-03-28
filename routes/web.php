@@ -1,22 +1,37 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Management\ConcessionController;
+use App\Http\Controllers\Management\OrderController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+
+
+
+Route::middleware('auth')->group(function () {
+    //dashboard
+    Route::get('/', DashboardController::class)->name('dashboard');
+    //concessions
+    Route::prefix('concessions')->name('concessions.')->controller(ConcessionController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{concession}/edit', 'edit')->name('edit');
+        Route::put('/{concession}/update', 'update')->name('update');
+        Route::delete('/{concession}/destroy', 'destroy')->name('destroy');
+    });
+    //orders
+    Route::prefix('orders')->name('orders.')->controller(OrderController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/{order}/edit', 'edit')->name('edit');
+        Route::put('/{order}/update', 'update')->name('update');
+        Route::delete('/{order}/destroy', 'destroy')->name('destroy');
+    });
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,4 +39,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
