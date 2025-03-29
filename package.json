@@ -28,6 +28,7 @@
     "dependencies": {
         "@heroicons/react": "^2.2.0",
         "classnames": "^2.5.1",
+        "react-select": "^5.10.1",
         "use-debounce": "^10.0.4"
     }
 }

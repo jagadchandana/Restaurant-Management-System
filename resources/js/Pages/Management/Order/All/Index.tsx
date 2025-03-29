@@ -5,7 +5,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PencilIcon } from '@heroicons/react/20/solid';
 import { Head } from '@inertiajs/react';
 
-export default function Index({ concessions, filters }: any) {
+export default function Index({ orders, filters }: any) {
 
     const tableColumns = [
         {
@@ -14,17 +14,13 @@ export default function Index({ concessions, filters }: any) {
             sortable: false,
         },
         {
-            label: "ID",
-            sortField: "id",
+            label: "Order ID",
+            sortField: "order_number",
             sortable: true,
         },
+
         {
-            label: "Name",
-            sortField: "name",
-            sortable: true,
-        },
-        {
-            label: "Price",
+            label: "Total Price",
             sortField: "price",
             sortable: false,
         },
@@ -33,27 +29,27 @@ export default function Index({ concessions, filters }: any) {
             sortField: "created_at",
             sortable: true,
         },
+        {
+            label: "Status",
+            sortField: "status",
+            sortable: true,
+        },
+        {
+            label: "Actions",
+            sortField: "",
+            sortable: false,
+        }
 
     ];
 
     const createLink = {
-        url: route("concessions.create"),
-        label: "Create Concession",
-    }
-
-    const importLink = {
-        url: "#",
-        label: "Import Roles",
-    }
-
-    const exportLink = {
-        url: "#",
-        label: "Export Roles",
+        url: route("orders.create"),
+        label: "Create Order",
     }
 
 
     const search = {
-        placeholder: "Search Roles...",
+        placeholder: "Search Orders...",
     }
 
 
@@ -61,12 +57,12 @@ export default function Index({ concessions, filters }: any) {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Concession
+                    Orders
                 </h2>
 
             }
         >
-            <Head title="Concession" />
+            <Head title="Orders" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -76,20 +72,18 @@ export default function Index({ concessions, filters }: any) {
                             tableColumns={tableColumns}
                             url={"#"}
                             createLink={createLink}
-                            importLink={importLink}
-                            exportLink={exportLink}
                             search={search}
                             filters={filters}
-                            links={concessions?.meta?.links}
+                            links={orders?.meta?.links}
                         >
-                            {concessions?.data?.map((concession: any) => (
+                            {orders?.data?.map((order: any) => (
                                 <TableBody
                                     buttons={
                                         <>
                                             <PrimaryLink
                                                 className="!py-2"
                                                 href={route("concessions.edit", {
-                                                    id: concession.id
+                                                    id: order.id
                                                 })}
                                             >
                                                 <PencilIcon className="w-5 h-5 mr-4" />
@@ -98,19 +92,27 @@ export default function Index({ concessions, filters }: any) {
                                             <ConfirmButton
                                                 className="!py-2"
                                                 url={route("concessions.destroy", {
-                                                    id: concession.id
+                                                    id: order.id
                                                 })}
                                                 label="Delete"
                                             />
                                         </>
 
                                     }
-                                    key={concession.id}
+                                    key={order.id}
                                 >
-                                    <TableTd>{concession.id}</TableTd>
-                                    <TableTd>{concession.name}</TableTd>
-                                    <TableTd>{concession.price}</TableTd>
-                                    <TableTd>{concession.created_at_human}</TableTd>
+                                    <TableTd>{order.order_number}</TableTd>
+                                    <TableTd>{order.concessions_total}</TableTd>
+                                    <TableTd>{order.created_at_human}</TableTd>
+                                    <TableTd>{order.status}</TableTd>
+                                    <TableTd>
+                                        <PrimaryLink
+                                            className="!py-2"
+                                            href={"#"}
+                                        >
+                                            {"Send to Kitchen Now"}
+                                        </PrimaryLink>
+                                    </TableTd>
                                 </TableBody>
                             ))}
                         </MasterTable>

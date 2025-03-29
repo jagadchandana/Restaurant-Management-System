@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Management;
 
+use App\Enums\OrderStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Repositories\Eloquent\Concession\ConcessionInterface;
 use App\Repositories\Eloquent\Order\OrderInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,18 +13,21 @@ class OrderController extends Controller
 {
     /**
      */
-    public function __construct(protected OrderInterface $orderInterface){}
+    public function __construct(
+        protected OrderInterface $orderInterface,
+        protected ConcessionInterface $concessionInterface
+    ) {}
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $filters = $request->all('searchParam', 'sortBy', 'sortDirection', 'rowPerPage', 'page');
-        $filters['sortBy'] = $filters['sortBy'] ?? 'name';
+        $filters['sortBy'] = $filters['sortBy'] ?? 'order_number';
         $filters['sortDirection'] = $filters['sortDirection'] ?? 'asc';
         $filters['rowPerPage'] = $filters['rowPerPage'] ?? 10;
         return Inertia::render("Management/Order/All/Index", [
-            'orders  ' => $this->orderInterface->filter($filters),
+            'orders' => $this->orderInterface->filter($filters),
             'filters' => $filters,
         ]);
     }
@@ -32,7 +37,9 @@ class OrderController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Management/Order/Create/Index', [
+            'concessions' => $this->concessionInterface->getByColumn([], ['id as value', 'name as label']),
+        ]);
     }
 
     /**
@@ -40,7 +47,10 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $data['order_number'] = rand(100000, 999999);
+        $this->orderInterface->create($data)->concessions()->sync($data['concession_ids']);
+        return redirect()->route('orders.index')->with('success', 'Order created successfully');
     }
 
     /**
