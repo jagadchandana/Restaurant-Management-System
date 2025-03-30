@@ -3,16 +3,24 @@
 namespace App\Http\Controllers\Management;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Eloquent\Order\OrderInterface;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class KitchenController extends Controller
 {
+    /**
+     * @param  protected
+     */
+    public function __construct(protected OrderInterface $orderInterface){}
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Inertia::render('Management/Kitchen/Index', [
+            'orders' => $this->orderInterface->all()
+        ]);
     }
 
     /**

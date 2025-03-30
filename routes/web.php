@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
     Route::middleware('role:manager')->group(function () {
-        //dashboard
-        Route::get('/', DashboardController::class)->name('dashboard');
+        // //dashboard
+        // Route::get('/', DashboardController::class)->name('dashboard');
         //concessions
         Route::prefix('concessions')->name('concessions.')->controller(ConcessionController::class)->group(function () {
             Route::get('/', 'index')->name('index');
