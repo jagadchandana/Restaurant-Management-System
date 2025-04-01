@@ -10,11 +10,13 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'to_kitchen',
+        'queue_order',
         'status',
     ];
 
     protected $appends = [
         'created_at_human',
+        'to_kitchen_human',
         'concessions_total',
     ];
 
@@ -24,6 +26,13 @@ class Order extends Model
     public function getCreatedAtHumanAttribute()
     {
         return Carbon::parse($this->created_at)->format('M d, Y h:i A');
+    }
+    /**
+     * @return [type]
+     */
+    public function getToKitchenHumanAttribute()
+    {
+        return Carbon::parse($this->to_kitchen)->format('M d, Y h:i A');
     }
 
     /**
@@ -46,6 +55,9 @@ class Order extends Model
                 $query->where('order_number', 'like', '%' . $search . '%');
             });
         });
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
     }
     /**
      * @return [type]

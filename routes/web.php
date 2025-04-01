@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/store', 'store')->name('store');
             Route::get('/{order}/edit', 'edit')->name('edit');
             Route::put('/{order}/update', 'update')->name('update');
+            Route::put('/{order}/update-status', 'updateStatus')->name('update.status');
             Route::delete('/{order}/destroy', 'destroy')->name('destroy');
         });
     });

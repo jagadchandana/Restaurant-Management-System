@@ -6,6 +6,7 @@ use App\Enums\OrderStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquent\Concession\ConcessionInterface;
 use App\Repositories\Eloquent\Order\OrderInterface;
+use App\Services\Order\OrderServices;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -66,7 +67,12 @@ class OrderController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $order = $this->orderInterface->findById($id, ['*'], ['concessions']);
+        return Inertia::render('Management/Order/Edit/Index', [
+            'order' => $order,
+            'concession_ids' => $order->concessions->pluck('id')->toArray(),
+            'concessions' => $this->concessionInterface->getByColumn([], ['id as value', 'name as label']),
+        ]);
     }
 
     /**
@@ -74,7 +80,12 @@ class OrderController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = $request->all();
+        $order = $this->orderInterface->findById($id);
+        $order->update($data);
+        $order->concessions()->sync($data['concession_ids']);
+        return redirect()->route('orders.index')->with('success', 'Order updated successfully');
+
     }
 
     /**
@@ -82,6 +93,20 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $this->orderInterface->deleteById($id);
+        return redirect()->route('orders.index')->with('success', 'Order deleted successfully');
+    }
+    /**
+     * Change the status of the order.
+     */
+    public function updateStatus(string $id)
+    {
+        $order = $this->orderInterface->findById($id);
+        $order->update([
+            'status' => OrderStatusEnum::InProgress->value,
+            'to_kitchen' => now(),
+        ]);
+        $this->orderInterface->addOrRemoveOrder($id, true);
+        return redirect()->route('orders.index')->with('success', 'Order sent to kitchen successfully');
     }
 }

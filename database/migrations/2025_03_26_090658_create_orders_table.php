@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('order_number')->unique();
             $table->dateTime('to_kitchen')->nullable();
+            $table->integer('queue_order')->nullable();
             $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
             $table->timestamps();
         });
