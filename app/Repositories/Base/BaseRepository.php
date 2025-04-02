@@ -28,18 +28,6 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
-     * Method limit
-     *
-     * @param  int  $limit  [limit]
-     * @param  array  $columns  [required columns]
-     * @param  array  $relations  [required relations]
-     */
-    public function limit(int $limit, array $columns = ['*'], array $relations = []): Collection
-    {
-        return $this->model->with($relations)->limit($limit)->get($columns);
-    }
-
-    /**
      * Method paginate
      *
      * @param  int  $number  [number of records per page]
@@ -49,13 +37,6 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->paginate($number);
     }
 
-    /**
-     * Get all trashed models.
-     */
-    public function allTrashed(): Collection
-    {
-        return $this->model->onlyTrashed()->get();
-    }
 
     /**
      * Find model by id.
@@ -83,19 +64,6 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->select($columns)->with($relations)->where($paramsAnddData)->first();
     }
 
-    /**
-     * Find model by id.
-     *
-     * @param  array  $modelId
-     * @param  array  $appends
-     */
-    public function findByColumnWithTrashed(
-        array $paramsAnddData,
-        array $columns = ['*'],
-        array $relations = []
-    ): ?Model {
-        return $this->model->withTrashed()->select($columns)->with($relations)->where($paramsAnddData)->first();
-    }
 
     /**
      * Find model by columns.
@@ -123,37 +91,7 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->select($columns)->where($paramsAnddData)->exists();
     }
 
-    /**
-     * Find trashed model by id.
-     */
-    public function findTrashedById(int $modelId): ?Model
-    {
-        return $this->model->withTrashed()->findOrFail($modelId);
-    }
 
-    /**
-     * Find only trashed model by id.
-     */
-    public function findOnlyTrashedById(int $modelId): ?Model
-    {
-        return $this->model->onlyTrashed()->findOrFail($modelId);
-    }
-
-    /**
-     * Find the latest model by specified columns and criteria.
-     */
-    public function findByColumnLatest(
-        array $paramsAndData,
-        array $columns = ['*'],
-        array $relations = [],
-        string $orderByColumn = 'created_at'
-    ): ?Model {
-        return $this->model->select($columns)
-            ->with($relations)
-            ->where($paramsAndData)
-            ->orderBy($orderByColumn, 'desc')
-            ->first();
-    }
 
     /**
      * Create a model.
@@ -183,22 +121,6 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->createMany($payloadCollection);
     }
 
-    /**
-     * Method to create multiple records.
-     *
-     * @param  array  $payloadCollection  [collection of payload]
-     * @return Collection|null
-     */
-    public function createManySupport(array $payloadCollection)
-    {
-        $createdRecords = collect();
-
-        foreach ($payloadCollection as $payload) {
-            $createdRecords->push($this->model->create($payload));
-        }
-
-        return $createdRecords;
-    }
 
     /**
      * Update existing model.
@@ -211,19 +133,6 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
-     * @param int $modelId
-     * @param array $payload
-     *
-     * @return bool
-     */
-    public function updateWithTrashed(int $modelId, array $payload): bool
-    {
-        $model = $this->findTrashedById($modelId);
-
-        return $model->update($payload);
-    }
-
-    /**
      * Delete model by id.
      */
     public function deleteById(int $modelId): bool
@@ -231,19 +140,6 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->findById($modelId)->delete();
     }
 
-    /**
-     * Delete models by array of ids.
-     *
-     * @return void
-     */
-    public function deleteByIds(array $modelIds): bool
-    {
-        foreach ($modelIds as $modelId) {
-            $this->deleteById($modelId);
-        }
-
-        return true;
-    }
 
     /**
      * Delete model by columns.
@@ -255,21 +151,7 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->where($paramsAndData)->delete();
     }
 
-    /**
-     * Restore model by id.
-     */
-    public function restoreById(int $modelId): bool
-    {
-        return $this->findOnlyTrashedById($modelId)->restore();
-    }
 
-    /**
-     * Permanently delete model by id.
-     */
-    public function permanentlyDeleteById(int $modelId): bool
-    {
-        return $this->findTrashedById($modelId)->forceDelete();
-    }
 
     /**
      * Method filter

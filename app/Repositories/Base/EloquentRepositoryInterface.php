@@ -13,14 +13,6 @@ interface EloquentRepositoryInterface
      */
     public function all(array $columns = ['*'], array $relations = []): Collection;
 
-    /**
-     * Method limit
-     *
-     * @param  int  $limit  [limit]
-     * @param  array  $columns  [required columns]
-     * @param  array  $relations  [required relations]
-     */
-    public function limit(int $limit, array $columns = ['*'], array $relations = []): Collection;
 
     /**
      * Method paginate
@@ -28,11 +20,6 @@ interface EloquentRepositoryInterface
      * @param  int  $number  [number of records per page]
      */
     public function paginate(int $number);
-
-    /**
-     * Get all trashed models.
-     */
-    public function allTrashed(): Collection;
 
     /**
      * Find model by id.
@@ -79,29 +66,6 @@ interface EloquentRepositoryInterface
     ): ?bool;
 
     /**
-     * Find trashed model by id.
-     */
-    public function findTrashedById(int $modelId): ?Model;
-
-    /**
-     * Find only trashed model by id.
-     */
-    public function findOnlyTrashedById(int $modelId): ?Model;
-
-    /**
-     * Find model by id.
-     *
-     * @param  array  $modelId
-     * @param  array  $appends
-     */
-    public function findByColumnLatest(
-        array $paramsAnddData,
-        array $columns = ['*'],
-        array $relations = [],
-        string $orderByColumn = 'created_at'
-    ): ?Model;
-
-    /**
      * Create a model.
      */
     public function create(array $payload): ?Model;
@@ -123,34 +87,11 @@ interface EloquentRepositoryInterface
      */
     public function update(int $modelId, array $payload): bool;
 
-    public function updateWithTrashed(int $modelId, array $payload): bool;
-
     /**
      * Delete model by id.
      */
     public function deleteById(int $modelId): bool;
 
-    /**
-     * @return void
-     */
-    public function deleteByIds(array $modelIds): bool;
-
-    /**
-     * Delete model by columns.
-     *
-     * @return int
-     */
-    public function deleteByColumn(array $paramsAndData);
-
-    /**
-     * Restore model by id.
-     */
-    public function restoreById(int $modelId): bool;
-
-    /**
-     * Permanently delete model by id.
-     */
-    public function permanentlyDeleteById(int $modelId): bool;
 
     /**
      * filter
