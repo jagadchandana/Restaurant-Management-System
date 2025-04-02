@@ -20,7 +20,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
             Route::get('/{concession}/edit', 'edit')->name('edit');
-            Route::put('/{concession}/update', 'update')->name('update');
+            Route::post('/{concession}/update', 'update')->name('update');
             Route::delete('/{concession}/destroy', 'destroy')->name('destroy');
         });
         //orders

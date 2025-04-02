@@ -5,15 +5,15 @@ import { Head, router, useForm } from "@inertiajs/react";
 import { FormEventHandler } from "react";
 
 export default function Index({ order, concession_ids, concessions }: any) {
-    const { data, setData, errors, post } = useForm({
+    const { data, setData, errors, put } = useForm({
         to_kitchen: order.to_kitchen,
         concession_ids: concession_ids,
     });
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        router.put(route("orders.update", {
+        put(route("orders.update", {
             id: order.id
-        }), data);
+        }));
     };
     return (
         <AuthenticatedLayout
@@ -30,9 +30,9 @@ export default function Index({ order, concession_ids, concessions }: any) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            All Orders
+                            Update Order
                         </div>
-                        <form className="p-6 text-gray-900">
+                        <form className="p-6 text-gray-900" onSubmit={submit}>
 
                             <div className="mb-4">
                                 <label
@@ -72,8 +72,6 @@ export default function Index({ order, concession_ids, concessions }: any) {
                             </div>
 
                             <button
-                                type="button"
-                                onClick={submit}
                                 className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
                             >
                                 Update Order

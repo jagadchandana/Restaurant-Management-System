@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Management\ConcessionRequest;
 use App\Repositories\Eloquent\Concession\ConcessionInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ConcessionController extends Controller
@@ -15,7 +16,7 @@ class ConcessionController extends Controller
      *
      * @return void
      */
-    public function __construct(protected ConcessionInterface $concessionInterface){}
+    public function __construct(protected ConcessionInterface $concessionInterface) {}
     /**
      * Display a listing of the resource.
      */
@@ -25,7 +26,7 @@ class ConcessionController extends Controller
         $filters['sortBy'] = $filters['sortBy'] ?? 'name';
         $filters['sortDirection'] = $filters['sortDirection'] ?? 'asc';
         $filters['rowPerPage'] = $filters['rowPerPage'] ?? 10;
-       return Inertia::render("Management/Concession/All/Index", [
+        return Inertia::render("Management/Concession/All/Index", [
             'concessions' => $this->concessionInterface->filter($filters),
             'filters' => $filters,
         ]);
@@ -44,18 +45,15 @@ class ConcessionController extends Controller
      */
     public function store(ConcessionRequest $request)
     {
-        $data = $request->all();
-        $data['image'] = $request->file('image')->store('concessions', 'public');
-        $this->concessionInterface->create($data);
-        return redirect()->route('concessions.index')->with('success', 'Concession created successfully');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        try {
+            $data = $request->all();
+            $data['image'] = $request->file('image')->store('concessions', 'public');
+            $this->concessionInterface->create($data);
+            return redirect()->route('concessions.index')->with('success', 'Concession created successfully');
+        } catch (\Throwable $th) {
+            Log::error('Concession creation failed: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Concession creation failed');
+        }
     }
 
     /**
@@ -64,7 +62,7 @@ class ConcessionController extends Controller
     public function edit(string $id)
     {
 
-        return Inertia::render('Management/Concession/Edit/Index',[
+        return Inertia::render('Management/Concession/Edit/Index', [
             'concession' => $this->concessionInterface->findById($id),
         ]);
     }
@@ -74,11 +72,15 @@ class ConcessionController extends Controller
      */
     public function update(ConcessionRequest $request, string $id)
     {
-        $data = $request->all();
-        $data['image'] = $request->file('image')->store('concessions', 'public');
-        $this->concessionInterface->update($id, $data);
-        return redirect()->route('concessions.index')->with('success', 'Concession updated successfully');
-
+        try {
+            $data = $request->all();
+            $data['image'] = $request->file('image')->store('concessions', 'public');
+            $this->concessionInterface->update($id, $data);
+            return redirect()->route('concessions.index')->with('success', 'Concession updated successfully');
+        } catch (\Throwable $th) {
+            Log::error('Concession update failed: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Concession update failed');
+        }
     }
 
     /**
@@ -86,7 +88,12 @@ class ConcessionController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->concessionInterface->deleteById($id);
-        return redirect()->route('concessions.index')->with('success','Concession deleted successfully');
+        try {
+            $this->concessionInterface->deleteById($id);
+            return redirect()->route('concessions.index')->with('success', 'Concession deleted successfully');
+        } catch (\Throwable $th) {
+            Log::error('Concession deletion failed: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Concession deletion failed');
+        }
     }
 }

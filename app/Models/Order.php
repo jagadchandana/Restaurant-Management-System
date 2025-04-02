@@ -21,6 +21,16 @@ class Order extends Model
     ];
 
     /**
+     * @param mixed $value
+     *
+     * @return [type]
+     */
+    public function setToKitchenAttribute($value)
+    {
+        $this->attributes['to_kitchen'] = Carbon::parse($value)->format('Y-m-d H:i:00');
+    }
+
+    /**
      * @return [type]
      */
     public function getCreatedAtHumanAttribute()

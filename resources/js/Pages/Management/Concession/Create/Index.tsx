@@ -18,7 +18,7 @@ export default function Index({ }) {
 console.log(errors,'errors');
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-       router.post(route("concessions.store"), data);
+       post(route("concessions.store"));
     };
     return (
         <AuthenticatedLayout
@@ -35,10 +35,9 @@ console.log(errors,'errors');
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            You're logged in!
-                            <InputError message={errors.name} />
+                            Create Concession
                         </div>
-                        <form className="p-6 text-gray-900">
+                        <form className="p-6 text-gray-900" onSubmit={submit}>
 
                             <div className="mb-4">
                                 <label
@@ -122,8 +121,6 @@ console.log(errors,'errors');
                                 <InputError message={errors.image} />
                             </div>
                             <button
-                                type="button"
-                                onClick={submit}
                                 className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
                             >
                                 Create Concession

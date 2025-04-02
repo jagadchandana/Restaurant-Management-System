@@ -11,7 +11,7 @@ export default function Index({ concessions }: any) {
     });
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        router.post(route("orders.store"), data);
+        post(route("orders.store"));
     };
     return (
         <AuthenticatedLayout
@@ -28,9 +28,9 @@ export default function Index({ concessions }: any) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            All Orders
+                            Create Order
                         </div>
-                        <form className="p-6 text-gray-900">
+                        <form className="p-6 text-gray-900" onSubmit={submit}>
 
                             <div className="mb-4">
                                 <label
@@ -70,8 +70,6 @@ export default function Index({ concessions }: any) {
                             </div>
 
                             <button
-                                type="button"
-                                onClick={submit}
                                 className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"
                             >
                                 Create Order

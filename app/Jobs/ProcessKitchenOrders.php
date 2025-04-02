@@ -2,13 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Enums\InKitchenEnum;
 use App\Enums\OrderStatusEnum;
 use App\Repositories\Eloquent\Order\OrderInterface;
-use App\Services\Order\OrderServices;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ProcessKitchenOrders implements ShouldQueue
 {
@@ -27,13 +26,14 @@ class ProcessKitchenOrders implements ShouldQueue
      */
     public function handle(OrderInterface $orderInterface): void
     {
-        $now = Carbon::now();
-        $orders = $orderInterface->getByColumn(['status' => OrderStatusEnum::Pending->value, 'to_kitchen' => '<='.$now]);
+        $now = Carbon::now()->format('Y-m-d H:i');
+        $orders = $orderInterface->getByColumn(['status' => OrderStatusEnum::Pending->value, 'to_kitchen' => $now]);
 
         foreach ($orders as $order) {
-           $order->update([
+            $order->update([
                 'status' => OrderStatusEnum::InProgress->value,
             ]);
+            // add order to kitchen(queue)
             $orderInterface->addOrRemoveOrder($order->id, true);
         }
     }
